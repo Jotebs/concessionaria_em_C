@@ -196,11 +196,13 @@ void devolver_veiculo(Veiculo array_veiculos[100], char placa[20]){
 }
 
 void remover_veiculo(Veiculo array_veiculos[100], char placa[20]){
-    if(buscar_placa(array_veiculos, placa) == -1){
+    int indice_placa = buscar_placa(array_veiculos, placa);
+
+    if(indice_placa == -1){
         printf("Não há um veículo com esta placa.\n");
         return;
     }else{
-        if(array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade == 0){
+        if(array_veiculos[indice_placa].disponibilidade == 0){
             printf("Não é possível remover este veículo pois está alugado.\n");
         }else{
             imprimir_um_veiculo(array_veiculos, placa);
@@ -208,13 +210,18 @@ void remover_veiculo(Veiculo array_veiculos[100], char placa[20]){
             printf("Deseja remover o carro?(S/N): ");
             scanf("%c", &confirmar);
             if(confirmar == 'S'){
-                int indice = buscar_placa(array_veiculos, placa);
-                for(int i = indice; array_veiculos[i+1].diaria == 0; i++){
+                int indice;
+                for(int i = indice_placa; array_veiculos[i+1].diaria != 0; i++){
                     strcpy(array_veiculos[i].placa, array_veiculos[i+1].placa);
                     strcpy(array_veiculos[i].marca, array_veiculos[i+1].marca);
                     array_veiculos[i].diaria = array_veiculos[i+1].diaria;
                     array_veiculos[i].disponibilidade = array_veiculos[i+1].disponibilidade;
+                    indice = i+1;
                 }
+                strcpy(array_veiculos[indice].placa, "0");
+                strcpy(array_veiculos[indice].marca, "0");
+                array_veiculos[indice].diaria = 0;
+                array_veiculos[indice].disponibilidade = 0;
                 printf("Veículo removido com sucesso.\n");
             }else{
                 return;
