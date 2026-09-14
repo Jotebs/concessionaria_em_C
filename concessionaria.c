@@ -37,14 +37,17 @@ opção de sair
 #include <string.h>
 #include <ctype.h>
 
+#define MAX_VEICULOS 100
+#define MAX_PLACA_MARCA 20
+
 typedef struct Veiculo{
-    char placa[20], marca[20];
+    char placa[MAX_PLACA_MARCA], marca[MAX_PLACA_MARCA];
     float diaria;
     int disponibilidade;
 }Veiculo;
 
-void ordenar_alfabeticamente(Veiculo array_veiculos[100]){
-    char placa_auxiliar[20], marca_auxiliar[20];
+void ordenar_alfabeticamente(Veiculo array_veiculos[MAX_VEICULOS]){
+    char placa_auxiliar[MAX_PLACA_MARCA], marca_auxiliar[MAX_PLACA_MARCA];
     float diaria_auxiliar;
     int disp_auxiliar;
 
@@ -71,7 +74,7 @@ void ordenar_alfabeticamente(Veiculo array_veiculos[100]){
     }
 }
 
-int buscar_placa(Veiculo array_veiculos[100], char placa[20]){
+int buscar_placa(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
     int indice_veiculo;
     for(int i=0; array_veiculos[i].diaria != 0; i++){
         if(strcmp(array_veiculos[i].placa, placa) == 0){
@@ -82,24 +85,26 @@ int buscar_placa(Veiculo array_veiculos[100], char placa[20]){
     return -1;
 }
 
-void imprimir_um_veiculo(Veiculo array_veiculos[100], char placa[20]){
-    if(buscar_placa(array_veiculos, placa) != -1){
-        if(array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade == 1){
-            printf("\nVeículo encontrado.\nPlaca: %sMarca: %sDiária: R$%.2f\nDisponível para alugar\n\n", array_veiculos[buscar_placa(array_veiculos, placa)].placa, array_veiculos[buscar_placa(array_veiculos, placa)]. marca, array_veiculos[buscar_placa(array_veiculos, placa)].diaria);
+void imprimir_um_veiculo(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
+    int indice_placa = buscar_placa(array_veiculos, placa);
+    if(indice_placa != -1){
+        if(array_veiculos[indice_placa].disponibilidade == 1){
+            printf("\nVeículo encontrado.\nPlaca: %sMarca: %sDiária: R$%.2f\nDisponível para alugar\n\n", array_veiculos[indice_placa].placa, array_veiculos[indice_placa]. marca, array_veiculos[indice_placa].diaria);
         }else{
-            printf("\nVeículo encontrado.\nPlaca: %sMarca: %sDiária: R$%.2f\nAlugado\n\n", array_veiculos[buscar_placa(array_veiculos, placa)].placa, array_veiculos[buscar_placa(array_veiculos, placa)]. marca, array_veiculos[buscar_placa(array_veiculos, placa)].diaria);
+            printf("\nVeículo encontrado.\nPlaca: %sMarca: %sDiária: R$%.2f\nAlugado\n\n", array_veiculos[indice_placa].placa, array_veiculos[indice_placa]. marca, array_veiculos[indice_placa].diaria);
         }
     }else{
         printf("Não há um veículo com esta placa no sistema.\n");
     }
 }
 
-void ler_dados_veiculo(Veiculo array_veiculos[100]){
+void ler_dados_veiculo(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
     Veiculo veiculo;
+    int indice_placa = buscar_placa(array_veiculos, placa);
     printf("\n========ADICIONAR VEÍCULO========");
     printf("\nPlaca do carro: ");
     fgets(veiculo.placa, sizeof(veiculo.placa), stdin);
-    if(buscar_placa(array_veiculos, veiculo.placa) == -1){
+    if(indice_placa == -1){
         printf("Marca do carro: ");
         fgets(veiculo.marca, sizeof(veiculo.marca), stdin);
         printf("Diária do carro: ");
@@ -107,7 +112,7 @@ void ler_dados_veiculo(Veiculo array_veiculos[100]){
         printf("Disponibilidade(0-Alugado, 1-Disponível): ");
         scanf("%d", &veiculo.disponibilidade);
 
-        for(int i=0; i<100; i++){
+        for(int i=0; i<MAX_VEICULOS; i++){
             if(array_veiculos[i].diaria == 0){
                 strcpy(array_veiculos[i].placa, veiculo.placa);
                 strcpy(array_veiculos[i].marca, veiculo.marca);
@@ -124,13 +129,13 @@ void ler_dados_veiculo(Veiculo array_veiculos[100]){
     }    
 }
 
-void imprimir_veiculos(Veiculo array_veiculos[100]){
+void imprimir_veiculos(Veiculo array_veiculos[MAX_VEICULOS]){
     printf("\n=====DADOS DOS VEÍCULOS=====\n");
     if(array_veiculos[0].diaria == 0){
         printf("A lista de veículos está vazia.\n");
         return;
     }else{
-        for(int i=0; i<100; i++){
+        for(int i=0; i<MAX_VEICULOS; i++){
             if(array_veiculos[i].diaria == 0){
                 return;
             }else{
@@ -145,18 +150,19 @@ void imprimir_veiculos(Veiculo array_veiculos[100]){
     }
 }
 
-void ler_placa(char placa[20], int tamanho){
+void ler_placa(char placa[MAX_PLACA_MARCA], int tamanho){
     printf("Digite a placa: ");
     fgets(placa, tamanho, stdin);
     return;
 }
 
-void alugar_um_veiculo(Veiculo array_veiculos[100], char placa[20]){
-    if(buscar_placa(array_veiculos, placa) == -1){
+void alugar_um_veiculo(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
+    int indice_placa = buscar_placa(array_veiculos, placa);
+    if(indice_placa == -1){
         printf("Não há um veículo com esta placa.\n");
         return;
     }else{
-        if(array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade == 0){
+        if(array_veiculos[indice_placa].disponibilidade == 0){
             printf("Este veículo já está alugado.\n");
         }else{
             imprimir_um_veiculo(array_veiculos, placa);
@@ -164,7 +170,7 @@ void alugar_um_veiculo(Veiculo array_veiculos[100], char placa[20]){
             printf("Deseja alugar o carro?(S/N): ");
             scanf("%c", &confirmar);
             if(confirmar == 'S'){
-                array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade = 0;
+                array_veiculos[indice_placa].disponibilidade = 0;
                 printf("Veículo alugado com sucesso.\n");
             }else{
                 return;
@@ -173,12 +179,13 @@ void alugar_um_veiculo(Veiculo array_veiculos[100], char placa[20]){
     }
 }
 
-void devolver_veiculo(Veiculo array_veiculos[100], char placa[20]){
-    if(buscar_placa(array_veiculos, placa) == -1){
+void devolver_veiculo(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
+    int indice_placa = buscar_placa(array_veiculos, placa);
+    if(indice_placa == -1){
         printf("Não há um veículo com esta placa.\n");
         return;
     }else{
-        if(array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade == 1){
+        if(array_veiculos[indice_placa].disponibilidade == 1){
             printf("Este veículo não está alugado.\n");
         }else{
             imprimir_um_veiculo(array_veiculos, placa);
@@ -186,7 +193,7 @@ void devolver_veiculo(Veiculo array_veiculos[100], char placa[20]){
             printf("Deseja devolver o carro?(S/N): ");
             scanf("%c", &confirmar);
             if(confirmar == 'S'){
-                array_veiculos[buscar_placa(array_veiculos, placa)].disponibilidade = 1;
+                array_veiculos[indice_placa].disponibilidade = 1;
                 printf("Veículo devolvido com sucesso.\n");
             }else{
                 return;
@@ -195,7 +202,7 @@ void devolver_veiculo(Veiculo array_veiculos[100], char placa[20]){
     }
 }
 
-void remover_veiculo(Veiculo array_veiculos[100], char placa[20]){
+void remover_veiculo(Veiculo array_veiculos[MAX_VEICULOS], char placa[MAX_PLACA_MARCA]){
     int indice_placa = buscar_placa(array_veiculos, placa);
 
     if(indice_placa == -1){
@@ -230,17 +237,17 @@ void remover_veiculo(Veiculo array_veiculos[100], char placa[20]){
     }
 }
 
-void menu(Veiculo array_veiculos[100]){
+void menu(Veiculo array_veiculos[MAX_VEICULOS]){
     int opcao = 0;
     printf("============================\n       IFSP veículos");
     while(opcao != 7){
         printf("\n=======MENU PRINCIPAL=======\n1 - Cadastrar veículo\n2 - Exibir veículos\n3 - Busca por placa\n4 - Alugar veículo\n5 - Devolver veículo\n6 - Remover veículo\n7 - Sair do programa\nEscolha uma opção: ");
         scanf("%d", &opcao);
         while(getchar() != '\n');
-        char placa[20];
+        char placa[MAX_PLACA_MARCA];
         switch(opcao){
             case 1:
-            ler_dados_veiculo(array_veiculos);
+            ler_dados_veiculo(array_veiculos, placa);
             break;
         case 2:
             imprimir_veiculos(array_veiculos);
@@ -272,6 +279,6 @@ void menu(Veiculo array_veiculos[100]){
 }
 
 int main(){
-    Veiculo veiculos[100] = {0};
+    Veiculo veiculos[MAX_VEICULOS] = {0};
     menu(veiculos);
 }
